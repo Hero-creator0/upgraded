@@ -1,0 +1,11 @@
+function addTask(){
+
+    let input = document.getElementById("taskInput").value;
+    let list = document.getElementById("taskList");
+
+    let li = document.createElement("li");
+    li.textContent = input;
+
+    list.appendChild(li);
+
+}
