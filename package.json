@@ -1,0 +1,9 @@
+{
+  "name": "study-planner",
+  "version": "1.0.0",
+  "description": "Simple web app",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'No server needed'"
+  }
+}
