@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - StudentPlanner-app
+name: Build and deploy PHP app to Azure Web App - StudentPlanner-app
 
 on:
   push:
@@ -18,21 +18,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: '24.x'
+          php-version: '8.5'
 
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+      - name: Check if composer.json exists
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: 'composer.json'
+
+      - name: Run composer install if composer.json exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
+          name: php-app
           path: .
 
   deploy:
@@ -46,18 +51,18 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: php-app
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B6ACBE9728BF4DA082EC79E1FDEA6662 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BC3AB97636744079B323BCE95655234F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2C95459E26B742D9BC3F37158F3A6E11 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_29F7CAE40DAE4B639B1FD4FDF8980F7B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_ABFC4174489E42BCB90124F68089A949 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B4716CEED25D413B9C6C195071B8BD88 }}
 
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
           app-name: 'StudentPlanner-app'
           slot-name: 'Production'
